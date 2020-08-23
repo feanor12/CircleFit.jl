@@ -4,6 +4,10 @@ Circle fitting WIP
 
 Default method used the loss function of Ka˙sa's method combined with lmfit from LsqFit (Levenberg-Marquardt algorithm).
 
+```math
+loss(xdata,ydata,x0,y0,r) = \sum_i \left( r^2 - (x0 - xdata_i)^2 -(y0-ydata_i)^2 \right)^2
+```
+
 Example:
 
 ```julia
