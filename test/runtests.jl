@@ -67,7 +67,7 @@ for r in 1:5
 end
 
 
-# symmetric test kasa method
+# asymmetric test kasa method
 for _ in 1:10
     x0 = rand()
     y0 = rand()
@@ -80,7 +80,7 @@ for _ in 1:10
     @assert r ≈ result[3]
 end
 
-# asymmetric test kasa method
+# symmetric test kasa method
 for _ in 1:10
     x0 = rand()
     y0 = rand()
