@@ -2,7 +2,7 @@
 
 Circle fitting WIP
 
-Default method used the loss function of Ka˙sa's method combined with lmfit from LsqFit (Levenberg-Marquardt algorithm).
+Default method used the loss function of ![Kåsa's method](https://doi.org/10.1109/TIM.1976.6312298) combined with lmfit from ![LsqFit.jl](https://github.com/JuliaNLSolvers/LsqFit.jl) (Levenberg-Marquardt algorithm).
 
 Example:
 
