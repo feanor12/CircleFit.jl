@@ -1,0 +1,8 @@
+name = "Circfit"
+uuid = "a2741ea9-3318-4d4b-8b99-ae5c58b57db7"
+authors = ["Michael Pusterhofer <pusterhofer@student.tugraz.at>"]
+version = "0.1.0"
+
+[deps]
+LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
