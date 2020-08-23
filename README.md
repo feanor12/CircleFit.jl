@@ -1,4 +1,4 @@
-# Circfit
+# CircFit.jl
 
 Circle fitting WIP
 
