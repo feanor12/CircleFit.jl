@@ -6,7 +6,7 @@ using CircFit
 for _ in 1:10
     x0 = rand()
     y0 = rand()
-    r = rand()
+    r = rand()+1
     x = r.*[-1.0,0,0,1] .+ x0
     y = r.*[0.0,1,-1,0] .+ y0
     p0 = [0.0,0,1]
@@ -51,3 +51,19 @@ for _ in 1:10
         @assert result1.param[i] ≈ result2.param[i] ≈ result3.param[i]
     end
 end
+
+# test weight matrix
+for r in 1:5
+    wt = zeros(Float32,11,11)
+    wt[6+r,6] = 1
+    wt[6-r,6] = 1
+    wt[6,6+r] = 1
+    wt[6,6-r] = 1
+    p0 = [2.0,2,1]
+    result = circfit(wt,p0)
+    @assert result.param[3] ≈ r
+    @assert result.param[1] ≈ 6
+    @assert result.param[2] ≈ 6
+end
+
+
