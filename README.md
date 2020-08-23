@@ -4,6 +4,11 @@ Circle fitting WIP
 
 Default method used the loss function of ![Kåsa's method](https://doi.org/10.1109/TIM.1976.6312298) combined with lmfit from ![LsqFit.jl](https://github.com/JuliaNLSolvers/LsqFit.jl) (Levenberg-Marquardt algorithm).
 
+Possible inputs:
+* Array of x, array of y, initial guess
+* Array of x, Array of y, Array of weights, initial guess
+* Matrix of weights, initial guess
+
 Example:
 
 ```julia
