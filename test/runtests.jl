@@ -1,6 +1,6 @@
 using Test
 
-using Circfit
+using CircFit
 
 # symmetric test
 for _ in 1:10
