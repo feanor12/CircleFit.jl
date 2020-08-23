@@ -20,7 +20,7 @@ end
 for _ in 1:10
     x0 = rand()
     y0 = rand()
-    r = rand()
+    r = rand()+1
     x = r.*[-1.0,0,0,1,sqrt(2)/2,sqrt(2)/2] .+ x0
     y = r.*[0.0,1,-1,0,sqrt(2)/2,-sqrt(2)/2] .+ y0
     p0 = [0.0,0,1]
@@ -35,7 +35,7 @@ end
 for _ in 1:10
     x0 = rand()
     y0 = rand()
-    r = rand()
+    r = rand()+1
     x = r.*[-1.0,0,0,1,sqrt(2)/2,sqrt(2)/2,0,0,0] .+ x0
     y = r.*[0.0,1,-1,0,sqrt(2)/2,-sqrt(2)/2,1.1,1.1,1.1] .+ y0
     p0 = [0.0,0,1]
@@ -67,3 +67,28 @@ for r in 1:5
 end
 
 
+# symmetric test kasa method
+for _ in 1:10
+    x0 = rand()
+    y0 = rand()
+    r = rand()+1
+    x = r.*[-1.0,0,0,1,sqrt(2)/2,sqrt(2)/2] .+ x0
+    y = r.*[0.0,1,-1,0,sqrt(2)/2,-sqrt(2)/2] .+ y0
+    result = circfit(Val{Kasa},x,y)
+    @assert x0 ≈ result[1]
+    @assert y0 ≈ result[2]
+    @assert r ≈ result[3]
+end
+
+# asymmetric test kasa method
+for _ in 1:10
+    x0 = rand()
+    y0 = rand()
+    r = rand()+1
+    x = r.*[-1.0,0,0,1] .+ x0
+    y = r.*[0.0,1,-1,0] .+ y0
+    result = circfit(Val{Kasa},x,y)
+    @assert x0 ≈ result[1]
+    @assert y0 ≈ result[2]
+    @assert r ≈ result[3]
+end

@@ -1,7 +1,32 @@
 module CircFit
 import LsqFit: lmfit
 
-export circfit
+export circfit, Kasa
+
+@enum Method begin
+    Kasa
+end
+
+"""
+Using analytical solution of Kasa
+https://ieeexplore.ieee.org/document/1246564
+x y values are arrays
+"""
+function circfit(::Type{Val{Kasa}},x::AbstractArray,y::AbstractArray)
+    n = length(x)
+    #TODO: use std and cov from Statistics
+    A = n*sum(x.^2) - (sum(x))^2
+    B = n*sum(x.*y) - sum(x)*sum(y)
+    C = n*sum(y.^2) - sum(y)^2
+    D = (n*sum(x.*y.^2) - sum(x)*sum(y.^2) + n*sum(x.^3) - sum(x)*sum(x.^2))/2
+    E = (n*sum(y.*x.^2) - sum(y)*sum(x.^2) + n*sum(y.^3) - sum(y)*sum(y.^2))/2
+
+    am = (D*C - B*E) / (A*C-B^2)
+    bm = (A*E - B*D) / (A*C-B^2)  
+    rk = sqrt(sum(((x.-am).^2 + (y.-bm).^2)/n))
+
+    (am,bm,rk)
+end
 
 """
 x: Array of x-coordinates
