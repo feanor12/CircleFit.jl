@@ -1,5 +1,6 @@
 module CircFit
 import LsqFit: lmfit
+import Statistics: var, cov
 
 export circfit, Kasa
 
@@ -14,15 +15,18 @@ x y values are arrays
 """
 function circfit(::Type{Val{Kasa}},x::AbstractArray,y::AbstractArray)
     n = length(x)
-    #TODO: use std and cov from Statistics
-    A = n*sum(x.^2) - (sum(x))^2
-    B = n*sum(x.*y) - sum(x)*sum(y)
-    C = n*sum(y.^2) - sum(y)^2
-    D = (n*sum(x.*y.^2) - sum(x)*sum(y.^2) + n*sum(x.^3) - sum(x)*sum(x.^2))/2
-    E = (n*sum(y.*x.^2) - sum(y)*sum(x.^2) + n*sum(y.^3) - sum(y)*sum(y.^2))/2
+    x² = x.^2
+    y² = y.^2
+    
+    A = n*(n-1)*var(x) 
+    B = n*(n-1)*cov(x,y) 
+    C = n*(n-1)*var(y) 
+    D = n*(n-1)/2*(cov(x,y²)+cov(x,x²)) 
+    E = n*(n-1)/2*(cov(y,x²)+cov(y,y²)) 
 
-    am = (D*C - B*E) / (A*C-B^2)
-    bm = (A*E - B*D) / (A*C-B^2)  
+    ACB2 = (A*C-B^2)
+    am = (D*C - B*E) / ACB2
+    bm = (A*E - B*D) / ACB2
     rk = sqrt(sum(((x.-am).^2 + (y.-bm).^2)/n))
 
     (am,bm,rk)
