@@ -1,4 +1,4 @@
-module CircFit
+module CircleFit
 import Statistics: var, cov, stdm
 
 export circfit
