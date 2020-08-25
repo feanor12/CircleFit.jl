@@ -39,4 +39,42 @@ function kasa(x::AbstractArray, y::AbstractArray)
     (am, bm, rk)
 end
 
+using LinearAlgebra
+function taubin(x,y)
+
+    z = x.^2 .+ y.^2
+    Mx = sum(x)
+    My = sum(y)
+    Mz = sum(z)
+    Mxx = sum(x.^2)
+    Myx = Mxy = sum(x.*y)
+    Mzx = Mxz = sum(x.*z)
+    Myy = sum(y.^2)
+    Mzy = Myz = sum(y.*z)
+    Mzz = sum(z.^2)
+    n = length(x)
+
+    C = [4Mz 2Mx 2My 0
+         2Mx n   0   0
+         2My 0   n   0
+         0   0   0   0]
+        
+    M = [Mzz Mxz Myz Mz
+         Mxz Mxx Mxy Mx
+         Myx Mxy Myy My
+         Mz  Mx  My  n]
+
+    @show F = eigen(M,C)
+
+    for i in 1:4
+        A,B,C,D = F.vectors[:,i]
+
+        a = -B/(2*A)
+        b = -C/(2*A)
+        r = sqrt((B^2+C^2-4*A*D)/(4*A^2))
+        @show (a,b,r)
+    end
+end
+
+
 end # module
