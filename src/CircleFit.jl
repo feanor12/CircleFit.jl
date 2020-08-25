@@ -4,10 +4,7 @@ import Statistics: var, cov, stdm
 export circfit
 
 """
-Fit a circle to the points provides as arrays of x and y coordinates
-
-This method uses [Kåsa's method](https://doi.org/10.1109/TIM.1976.6312298)
-The result is a GeometryBasics::Circle
+Fit a circle to points provided as arrays of x and y coordinates
 
 Example
 ```
@@ -16,7 +13,15 @@ y = [0.0,1,-1,0]
 x0,y0,radius = circfit(x,y)
 ```
 """
-function circfit(x::AbstractArray, y::AbstractArray)
+circfit(x,y) = kasa(x,y)
+
+"""
+Fit a circle to the points provided as arrays of x and y coordinates
+
+This method uses [Kåsa's method](https://doi.org/10.1109/TIM.1976.6312298)
+The result is a GeometryBasics::Circle
+"""
+function kasa(x::AbstractArray, y::AbstractArray)
     x² = x.^2
     y² = y.^2
     
