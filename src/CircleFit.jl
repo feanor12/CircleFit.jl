@@ -40,6 +40,12 @@ function kasa(x::AbstractArray, y::AbstractArray)
 end
 
 using LinearAlgebra
+
+"""
+Fit a circle by using Taubin's method
+https://doi.org/10.1007/s10851-005-0482-8
+Warning: not optimized
+"""
 function taubin(x,y)
 
     z = x.^2 .+ y.^2
@@ -61,19 +67,21 @@ function taubin(x,y)
         
     M = [Mzz Mxz Myz Mz
          Mxz Mxx Mxy Mx
-         Myx Mxy Myy My
+         Myz Mxy Myy My
          Mz  Mx  My  n]
 
-    @show F = eigen(M,C)
+    F = eigen(M,C)
 
-    for i in 1:4
-        A,B,C,D = F.vectors[:,i]
+    values = F.values
+    values[values .< 0] .= Inf
+    i = argmin(values)
 
-        a = -B/(2*A)
-        b = -C/(2*A)
-        r = sqrt((B^2+C^2-4*A*D)/(4*A^2))
-        @show (a,b,r)
-    end
+    A,B,C,D = F.vectors[:,i]
+
+    a = -B/(2*A)
+    b = -C/(2*A)
+    r = sqrt((B^2+C^2-4*A*D)/(4*A^2))
+    (a,b,r)
 end
 
 
