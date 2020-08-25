@@ -1,11 +1,11 @@
-# CircFit.jl
+# CircleFit.jl
 
 Circle fitting using [Kåsa's method](https://doi.org/10.1109/TIM.1976.6312298)
 
 Example:
 ```julia
 # import library
-using Circfit
+using CircleFit
 # generate test data
 r = 5
 x0 = 2

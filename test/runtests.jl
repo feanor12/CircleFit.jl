@@ -1,5 +1,5 @@
 using Test
-using CircFit
+using CircleFit
 
 # asymmetric test kasa method
 for _ in 1:10
