@@ -1,46 +1,37 @@
 module CircFit
-import LsqFit: lmfit
+import Statistics: var, cov, stdm
 
 export circfit
 
 """
-x: Array of x-coordinates
-y: Array of y-coordinates
-p0: Array of initial values [center_x, center_y, radius] 
-"""
-function circfit(x::AbstractArray,y::AbstractArray,p0::AbstractArray,kwargs...)
-    T = eltype(y)
-    f = (p) -> @. p[3]^2 - (x-p[1])^2 - (y-p[2])^2
-    lmfit(f,p0,T[];kwargs...)
-end
+Fit a circle to the points provides as arrays of x and y coordinates
 
-"""
-x: Array of x-coordinates
-y: Array of y-coordinates
-w: Array of weights
-p0: Array of initial values [center_x, center_y, radius] 
-"""
-function circfit(x::AbstractArray,y::AbstractArray,wt::AbstractArray,p0::AbstractArray,kwargs...)
-    u = sqrt.(wt)
-    f = (p) -> @. u*(p[3]^2 - (x-p[1])^2 - (y-p[2])^2)
-    lmfit(f,p0,wt;kwargs...)
-end
+This method uses [Kåsa's method](https://doi.org/10.1109/TIM.1976.6312298)
+The result is a GeometryBasics::Circle
 
+Example
+```
+x = [-1.0,0,0,1]
+y = [0.0,1,-1,0]
+x0,y0,radius = circfit(x,y)
+```
 """
-wt: Array of weights
-p0: Array of initial values [center_x, center_y, radius] 
-
-returns the center and radius is terms of the array index (starting at one)
-center_x: dim=1
-center_y: dims=2
-"""
-function circfit(wt::AbstractMatrix,p0::AbstractArray,kwargs...)
-    u = sqrt.(wt)
-    x = repeat(1:size(wt,1),1,size(wt,2))
-    y = repeat((1:size(wt,2))',size(wt,1),1)
+function circfit(x::AbstractArray, y::AbstractArray)
+    x² = x.^2
+    y² = y.^2
     
-    f = (p) -> view((@. u*(p[3]^2 - (x-p[1])^2 - (y-p[2])^2)),:)
-    lmfit(f,p0,view(wt,:);kwargs...)
+    A = var(x) 
+    B = cov(x, y) 
+    C = var(y) 
+    D = cov(x, y²) + cov(x, x²)
+    E = cov(y, x²) + cov(y, y²) 
+
+    ACB2 = 2 * (A * C - B^2)
+    am = (D * C - B * E) / ACB2 
+    bm = (A * E - B * D) / ACB2
+    rk = hypot(stdm(x, am, corrected=false), stdm(y, bm, corrected=false))
+
+    (am, bm, rk)
 end
 
 end # module
