@@ -6,8 +6,7 @@ export circfit
 """
 Fit a circle to the points provides as arrays of x and y coordinates
 
-This method uses Kasa's method https://ieeexplore.ieee.org/document/1246564
-
+This method uses [Kåsa's method](https://doi.org/10.1109/TIM.1976.6312298)
 The result is a GeometryBasics::Circle
 
 Example
