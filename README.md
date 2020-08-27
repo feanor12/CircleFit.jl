@@ -16,3 +16,6 @@ y = r.*[0.0,1,-1,0] .+ y0
 x0,y0,radius = circfit(x,y)
 #(2.0, 4.499999999999999, 5.0)
 ```
+
+Non optimized implementations:
+* Method by Taubin `CircleFit.taubin(x,y)`
