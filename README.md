@@ -19,3 +19,4 @@ x0,y0,radius = circfit(x,y)
 
 Non optimized implementations:
 * Method by Taubin `CircleFit.taubin(x,y)`
+* Method by Pratt `CircleFit.pratt(x,y)`
