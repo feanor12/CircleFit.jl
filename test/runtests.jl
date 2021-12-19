@@ -1,5 +1,7 @@
 using Test
+using StatsBase
 using CircleFit
+
 
 @testset "Analytic Fits" begin
     @testset "Pratt" begin
@@ -10,5 +12,8 @@ using CircleFit
     end
     @testset "Kasa" begin
         include("kasa.jl")
+    end
+    @testset "FitResults" begin
+        include("FitResults.jl")
     end
 end

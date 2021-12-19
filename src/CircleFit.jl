@@ -1,7 +1,34 @@
 module CircleFit
+import StatsBase
+import StatsBase: RegressionModel, residuals, coef, coefnames, dof
 import Statistics: var, cov, stdm
 
 export circfit
+
+"""
+Result of the a circle fit
+
+* center position is given by x0
+* radius is given by radius
+* the data points are stored as a matrix (number of points, dimensions) in points
+
+To get the coefficients one can use StatsBase.coef
+The coeffient names are provived by StatsBase.coefnames
+"""
+struct FitResult <: RegressionModel
+    position::AbstractArray
+    radius
+    points::AbstractArray
+end
+
+StatsBase.coef(fit::FitResult) = (fit.position..., fit.radius)
+StatsBase.coefnames(fit::FitResult) = (("center position x".*string.(1:length(fit.position)))..., "radius")
+StatsBase.dof(fit::FitResult) = length(fit.points) - length(coef(fit))
+function StatsBase.residuals(fit::FitResult)
+    rs = @. hypot(fit.points[:,1] - fit.position[1], fit.points[:,2] - fit.position[2])
+    rs .- fit.radius
+end
+StatsBase.rss(fit::FitResult) = sum(abs2.(residuals(fit)))
 
 """
 Fit a circle to points provided as arrays of x and y coordinates
@@ -36,7 +63,7 @@ function kasa(x::AbstractArray, y::AbstractArray)
     bm = (A * E - B * D) / ACB2
     rk = hypot(stdm(x, am, corrected=false), stdm(y, bm, corrected=false))
 
-    (am, bm, rk)
+    FitResult([am, bm], rk, [x y])
 end
 
 using LinearAlgebra
@@ -81,7 +108,8 @@ function taubin(x,y)
     a = -B/(2*A)
     b = -C/(2*A)
     r = sqrt((B^2+C^2-4*A*D)/(4*A^2))
-    (a,b,r)
+
+    FitResult([a, b], r, [x y])
 end
 
 """
@@ -123,7 +151,8 @@ function pratt(x,y)
     a = -B/(2*A)
     b = -C/(2*A)
     r = sqrt((B^2+C^2-4*A*D)/(4*A^2))
-    (a,b,r)
+
+    FitResult([a, b], r, [x y])
 end
 
 
