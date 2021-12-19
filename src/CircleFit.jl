@@ -8,7 +8,7 @@ export circfit
 """
 Result of the a circle fit
 
-* center position is given by x0
+* center position is given by position
 * radius is given by radius
 * the data points are stored as a matrix (number of points, dimensions) in points
 
