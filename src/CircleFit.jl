@@ -23,7 +23,7 @@ end
 
 StatsBase.coef(fit::FitResult) = (fit.position..., fit.radius)
 StatsBase.coefnames(fit::FitResult) = (("center position x".*string.(1:length(fit.position)))..., "radius")
-StatsBase.dof(fit::FitResult) = length(fit.points) - length(coef(fit))
+StatsBase.dof(fit::FitResult) = size(fit.points,1) - length(coef(fit))
 function StatsBase.residuals(fit::FitResult)
     rs = @. hypot(fit.points[:,1] - fit.position[1], fit.points[:,2] - fit.position[2])
     rs .- fit.radius
