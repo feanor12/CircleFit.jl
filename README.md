@@ -1,6 +1,6 @@
 # CircleFit.jl
 
-[![Build Status](https://travis-ci.com/feanor12/CircleFit.jl.svg?branch=master)](https://travis-ci.com/feanor12/CircleFit.jl)
+[![CI](https://github.com/feanor12/CircleFit.jl/actions/workflows/test.yml/badge.svg)](https://github.com/feanor12/CircleFit.jl/actions/workflows/test.yml)
 [![Coverage](https://codecov.io/gh/feanor12/CircleFit.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/feanor12/CircleFit.jl)
 
 
