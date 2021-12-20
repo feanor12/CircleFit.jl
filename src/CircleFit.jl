@@ -1,7 +1,58 @@
 module CircleFit
+import StatsBase
+import StatsBase: RegressionModel, residuals, coef, coefnames, dof
 import Statistics: var, cov, stdm
 
-export circfit
+export circfit, Circle, algorithm
+
+"""
+Circle fit model 
+
+Currently only in 2D
+
+* position: center position of the fitted circle
+* radius: radius of the fitted circle
+* points: the data to fit to. Points are stored as a matrix (number of points, number of dimensions)
+* alg: algorithm to use. Possible options are :kasa,:pratt and :taubin
+
+To get the coefficients one can use StatsBase.coef
+The coeffient names are provived by StatsBase.coefnames
+"""
+struct Circle <: RegressionModel
+    position::AbstractArray
+    radius
+    points::AbstractArray
+    alg::Symbol
+end
+
+"""
+Get the algorithm used in the fit
+"""
+algorithm(model::Circle) = model.alg
+
+# StatsBase methods
+
+StatsBase.coef(fit::Circle) = (fit.position..., fit.radius)
+StatsBase.coefnames(fit::Circle) = (("center position x".*string.(1:length(fit.position)))..., "radius")
+StatsBase.dof(fit::Circle) = size(fit.points,1) - length(coef(fit))
+function StatsBase.residuals(fit::Circle)
+    rs = @. hypot(fit.points[:,1] - fit.position[1], fit.points[:,2] - fit.position[2])
+    rs .- fit.radius
+end
+StatsBase.rss(fit::Circle) = sum(abs2.(residuals(fit)))
+
+function StatsBase.fit(::Type{Circle},x::AbstractArray,y::AbstractArray;alg=:kasa) 
+    x0,y0,r = if alg == :taubin
+        taubin(x,y)
+    elseif alg == :pratt
+        pratt(x,y)
+    else
+        kasa(x,y)
+    end
+    Circle([x0,y0],r,[x y],alg)
+end
+
+# Old method interface
 
 """
 Fit a circle to points provided as arrays of x and y coordinates
@@ -14,6 +65,8 @@ x0,y0,radius = circfit(x,y)
 ```
 """
 circfit(x,y) = kasa(x,y)
+
+@deprecate circfit(x,y) StatsBase.fit(Circle,x,y) false
 
 """
 Fit a circle to the points provided as arrays of x and y coordinates
@@ -81,7 +134,8 @@ function taubin(x,y)
     a = -B/(2*A)
     b = -C/(2*A)
     r = sqrt((B^2+C^2-4*A*D)/(4*A^2))
-    (a,b,r)
+
+    (a, b, r)
 end
 
 """
@@ -123,7 +177,8 @@ function pratt(x,y)
     a = -B/(2*A)
     b = -C/(2*A)
     r = sqrt((B^2+C^2-4*A*D)/(4*A^2))
-    (a,b,r)
+
+    (a, b, r)
 end
 
 

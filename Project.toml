@@ -1,17 +1,13 @@
 name = "CircleFit"
 uuid = "a2741ea9-3318-4d4b-8b99-ae5c58b57db7"
 authors = ["Michael Pusterhofer <pusterhofer@student.tugraz.at>"]
-version = "0.2.0"
-
-[compat]
-julia = "1"
+version = "0.3.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
-[extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+[compat]
+julia = "1.2"
 
-[targets]
-test = ["Test"]
