@@ -13,7 +13,7 @@ Currently only in 2D
 * position: center position of the fitted circle
 * radius: radius of the fitted circle
 * points: the data to fit to. Points are stored as a matrix (number of points, number of dimensions)
-* alg: algorithm to use. Possible options are :kasa,:pratt and :taubin
+* alg: algorithm to use. Possible options are :kasa, :pratt, :graf and :taubin
 
 To get the coefficients one can use StatsBase.coef
 The coeffient names are provived by StatsBase.coefnames
@@ -46,6 +46,9 @@ function StatsBase.fit(::Type{Circle},x::AbstractArray,y::AbstractArray;alg=:kas
         taubin(x,y)
     elseif alg == :pratt
         pratt(x,y)
+    elseif alg == :graf
+        p0 = collect(kasa(x,y))
+        GRAF(x,y,p0)
     else
         kasa(x,y)
     end
@@ -181,26 +184,28 @@ function pratt(x,y)
     (a, b, r)
 end
 
-import NLSolversBase: OnceDifferentiable
-import LsqFit: lmfit
+import LsqFit: levenberg_marquardt, OnceDifferentiable, minimizer
 
 """
 Gradient weighted algebraic fit
+* x: vector of x coordinates
+* y: vector of y coordiantes
+* p0: starting values for the fit parameters(position x, position y , radius)
+* kwargs are passed to `LsqFit.levenberg_marquardt`
+
+return (position x, position y , radius)
 """
 function GRAF(x,y,p0;kwargs...)
-    
-    function model_inplace(F, x, p) 
+    x1 = x
+    x2 = y
+    z = @. x1^2 + x2^2
+
+    model_inplace = (F, p) -> begin
         B,C,D = p
-        x1 = @view x[:,1]
-        x2 = @view x[:,2]
-        z = @. x1^2 + x2^2
         @. F = (z + B*x1 + C*x2 + D) / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D)
     end
-    function jacobian_inplace(F::Array{Float64,2},x,p)
+    jacobian_inplace = (F::Array{Float64,2},p) -> begin
         B,C,D = p
-        x1 = @view x[:,1]
-        x2 = @view x[:,2]
-        z = @. x1^2 + x2^2
         # dB
         @. F[:,1] = x1 / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D) - (z + B*x1 + C*x2 + D) / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D)^2 * (4*x1+2*B)
         # dC
@@ -208,7 +213,7 @@ function GRAF(x,y,p0;kwargs...)
         # dD
         @. F[:,3] = 1 / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D)
     end
-    R = OnceDifferentiable(model_inplace, jacobian_inplace, abr_BCD(p0...), similar(x); inplace = true)
+    R = OnceDifferentiable(model_inplace, jacobian_inplace, abr_to_BCD(p0...), similar(x); inplace = true)
     results = levenberg_marquardt(R, p0; kwargs...)
     coef = minimizer(results)
     BCD_to_abr(coef...)
@@ -219,7 +224,7 @@ convert the parametric form of
 z+B*x+C*y+D -> (x-a)²+(y-b)²-r²
 """
 function BCD_to_abr(B,C,D)
-    (-B/2,-C/2,sqrt(D-B^2/4-C^2/4))
+    [-B/2,-C/2,sqrt(B^2/4+C^2/4-D)]
 end
 
 """
@@ -227,7 +232,7 @@ convert the parametric form of
 z+B*x+C*y+D <- (x-a)²+(y-b)²-r²
 """
 function abr_to_BCD(a,b,r)
-    (-2a,-2b,a^2+b^2-r^2)
+    [-2a,-2b,a^2+b^2-r^2]
 end
 
 end # module

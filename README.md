@@ -35,6 +35,8 @@ rss(result)
 # 1.5777218104420236e-30
 ```
 
+Gradient weighted algebraic fit for a circle using `LsqFit.levenberg_marquardt`: `CircleFit.GRAF(x,y,p0)` or `fit(Circle,x,y,alg=:graf)`
+
 Non optimized implementations:
 * Method by Taubin `CircleFit.taubin(x,y)` or `fit(Circle,x,y,alg=:taubin)`
 * Method by Pratt `CircleFit.pratt(x,y)` or `fit(Circle,x,y,alg=:pratt)`

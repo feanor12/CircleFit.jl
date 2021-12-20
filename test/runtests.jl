@@ -13,6 +13,9 @@ using CircleFit
     @testset "Kasa" begin
         include("kasa.jl")
     end
+    @testset "GRAF" begin
+        include("graf.jl")
+    end
 end
 @testset "StatsModel" begin
     include("Circle.jl")
