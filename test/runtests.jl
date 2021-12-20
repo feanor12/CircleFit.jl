@@ -13,7 +13,7 @@ using CircleFit
     @testset "Kasa" begin
         include("kasa.jl")
     end
-    @testset "FitResults" begin
-        include("FitResults.jl")
-    end
+end
+@testset "StatsModel" begin
+    include("Circle.jl")
 end
