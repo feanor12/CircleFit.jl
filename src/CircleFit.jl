@@ -202,21 +202,27 @@ function GRAF(x,y,p0;kwargs...)
 
     model_inplace = (F, p) -> begin
         B,C,D = p
-        @. F = (z + B*x1 + C*x2 + D) / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D)
+        A = 1
+        @. F = (A*z + B*x1 + C*x2 + D) / (4*A*(A*z+B*x1+C*x2+D)+B^2+C^2-4*A*D)
     end
     jacobian_inplace = (F::Array{Float64,2},p) -> begin
+        A = 1
         B,C,D = p
+        
+        # dA
+        #@. F[:,1] = z / (4*A*(A*z+B*x1+C*x2+D)+B^2+C^2-4*A*D) - (A*z + B*x1 + C*x2 + D) / (4*A*(A*z+B*x1+C*x2+D)+B^2+C^2-4*A*D)^2 * (8*A*z-4*D)
         # dB
-        @. F[:,1] = x1 / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D) - (z + B*x1 + C*x2 + D) / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D)^2 * (4*x1+2*B)
+        @. F[:,1] = x1 / (4*A*(A*z+B*x1+C*x2+D)+B^2+C^2-4*A*D) - (A*z + B*x1 + C*x2 + D) / (4*A*(A*z+B*x1+C*x2+D)+B^2+C^2-4*A*D)^2 * (4*A*x1+2*B)
         # dC
-        @. F[:,2] = x2 / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D) - (z + B*x1 + C*x2 + D) / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D)^2 * (4*x2+2*C)
+        @. F[:,2] = x2 / (4*A*(A*z+B*x1+C*x2+D)+B^2+C^2-4*A*D) - (A*z + B*x1 + C*x2 + D) / (4*A*(A*z+B*x1+C*x2+D)+B^2+C^2-4*A*D)^2 * (4*A*x2+2*C)
         # dD
-        @. F[:,3] = 1 / (4*(z+B*x1+C*x2+D)+B^2+C^2-4*D)
+        @. F[:,3] = 1 / (4*A*(A*z+B*x1+C*x2+D)+B^2+C^2-4*A*D) 
     end
-    R = OnceDifferentiable(model_inplace, jacobian_inplace, abr_to_BCD(p0...), similar(x); inplace = true)
-    results = levenberg_marquardt(R, p0; kwargs...)
+    p0_ext = [abr_to_BCD(p0...)...]
+    R = OnceDifferentiable(model_inplace, jacobian_inplace, p0_ext, similar(x); inplace = true)
+    results = levenberg_marquardt(R, p0_ext; kwargs...)
     coef = minimizer(results)
-    BCD_to_abr(coef...)
+    BCD_to_abr(coef[1:end]...)
 end
 
 """
