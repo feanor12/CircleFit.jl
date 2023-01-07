@@ -103,6 +103,8 @@ Warning: not optimized
 """
 function taubin(x,y)
 
+    @show x y
+
     z = x.^2 .+ y.^2
     Mx = sum(x)
     My = sum(y)
@@ -125,13 +127,15 @@ function taubin(x,y)
          Myz Mxy Myy My
          Mz  Mx  My  n]
 
+
     F = eigen(M,C)
+    @show M C F
 
     values = F.values
     values[values .< 0] .= Inf
     i = argmin(values)
 
-    A,B,C,D = F.vectors[:,i]
+    @show A,B,C,D = F.vectors[:,i]
 
     a = -B/(2*A)
     b = -C/(2*A)
