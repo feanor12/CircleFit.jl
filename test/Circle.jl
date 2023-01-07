@@ -31,7 +31,10 @@ coefs = coef(result)
 @test r ≈ coefs[3]
 @test algorithm(result) == :pratt
 
+dump(x)
+dump(y)
 result = fit(Circle,x,y,alg=:taubin)
+dump(result)
 coefs = coef(result)
 @test x0 ≈ coefs[1]
 @test y0 ≈ coefs[2]
