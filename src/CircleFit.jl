@@ -67,9 +67,8 @@ y = [0.0,1,-1,0]
 x0,y0,radius = circfit(x,y)
 ```
 """
-circfit(x,y) = kasa(x,y)
 
-@deprecate circfit(x::AbstractArray,y::AbstractArray) StatsBase.fit(c::Circle,x,y) false
+@deprecate circfit(x::AbstractArray,y::AbstractArray) StatsBase.fit(Circle,x,y) true
 
 """
 Fit a circle to the points provided as arrays of x and y coordinates
