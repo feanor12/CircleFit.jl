@@ -1,22 +1,21 @@
 module CircleFit
 import StatsBase
 import StatsBase: RegressionModel, residuals, coef, coefnames, dof
-import Statistics: var, cov, stdm
+import Statistics: var, cov, stdm, mean
+import Roots: find_zero
 
-export circfit, Circle, algorithm
+export circfit, fit, Circle, algorithm, parametric_form
 
 """
-Circle fit model 
+    Circle 
+Represents a fitted circle characterized by `position` (center position of the fitted circle) 
+and `radius`  of the fitted circle. The field `points` refers to the data the model is fit to. 
+Points are stored as a matrix (number of points, number of dimensions). 
 
-Currently only in 2D
+To get the coefficients one can use `StatsBase.coef` 
+and coefficient names are provided by `StatsBase.coefnames`
 
-* position: center position of the fitted circle
-* radius: radius of the fitted circle
-* points: the data to fit to. Points are stored as a matrix (number of points, number of dimensions)
-* alg: algorithm to use. Possible options are :kasa, :pratt, :graf and :taubin
-
-To get the coefficients one can use StatsBase.coef
-The coeffient names are provived by StatsBase.coefnames
+Currently only in 2D.
 """
 struct Circle <: RegressionModel
     position::AbstractArray
@@ -26,12 +25,13 @@ struct Circle <: RegressionModel
 end
 
 """
-Get the algorithm used in the fit
+    algorithm(model::Circle) 
+
+Gets the algorithm used for the model fitting. 
 """
 algorithm(model::Circle) = model.alg
 
 # StatsBase methods
-
 StatsBase.coef(fit::Circle) = (fit.position..., fit.radius)
 StatsBase.coefnames(fit::Circle) = (("center position x".*string.(1:length(fit.position)))..., "radius")
 StatsBase.dof(fit::Circle) = size(fit.points,1) - length(coef(fit))
@@ -41,11 +41,26 @@ function StatsBase.residuals(fit::Circle)
 end
 StatsBase.rss(fit::Circle) = sum(abs2.(residuals(fit)))
 
+"""
+    fit(::Type{Circle}, x::AbstractArray, y::AbstractArray; alg=:kasa)
+
+Fit a circle to points provided as arrays of x and y coordinates using the algorithm 
+specified by `alg` (default is `:kasa`). Possible algorithms include 
+
+- `:kasa` for Kåsa's method [1]
+- `:taubin` for using Taubin's method [2]
+- `:pratt` for using Pratt's method [3]. 
+- `:pratt_newton` for using a more numerically stable Pratt's method [4]. 
+
+Returns a `Circle` object
+"""
 function StatsBase.fit(::Type{Circle},x::AbstractArray,y::AbstractArray;alg=:kasa) 
     x0,y0,r = if alg == :taubin
         taubin(x,y)
     elseif alg == :pratt
         pratt(x,y)
+    elseif alg == :pratt_newton 
+        pratt_newton(x, y) 
     elseif alg == :graf
         p0 = collect(kasa(x,y))
         GRAF(x,y,p0)
@@ -182,6 +197,53 @@ function pratt(x,y)
 
     (a, b, r)
 end
+export pratt
+
+"""
+Fit a circle by using the method of Pratt
+# https://doi.org/10.1201/EBK1439835906
+# https://people.cas.uab.edu/~mosya/cl/CircleFitByPratt.cpp
+# https://link.springer.com/article/10.1007/s10851-005-0482-8
+"""
+function pratt_newton(x, y) 
+    # want to center the data (ie, xbar = ybar = 0)
+    n = length(y)
+    X = x .- mean(x) 
+    Y = y .- mean(y)
+    Z = @. X^2 + Y^2 # compute distance from origin to each pair x,y
+
+    Mxx = mean(@. X^2)
+    Myy = mean(@. Y^2)
+    Mxy = mean(@. X*Y)
+    Mxz = mean(@. X*Z)
+    Myz = mean(@. Y*Z)
+    Mzz = mean(@. Z*Z)
+
+     # compute the coefficients of the characteristic polynomial
+    Mz = Mxx + Myy
+    Cov_xy = Mxx * Myy - Mxy * Mxy
+    Mxz2 = Mxz^2
+    Myz2 = Myz^2
+
+    A2 = 4*Cov_xy - 3*Mz^2 - Mzz
+    A1 = Mzz * Mz + 4 * Cov_xy * Mz - Mxz2 - Myz2 - Mz^3
+    A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2 * Mxz * Myz * Mxy + Mz^2 * Cov_xy
+    A22 = A2 + A2
+
+    # characteristic polynomial to solve P(η) = 4η^4 + c₂η² + c₁η + c₀ = 0 
+    P(x) = 4*x^4 + A2*x^2 + A1*x + A0  
+    η = find_zero(P, 0)
+
+    DET = η^2 - η*Mz + Cov_xy;
+    Xcenter = (Mxz*(Myy - η) - Myz*Mxy)/DET/2 
+    Ycenter = (Myz*(Mxx - η) - Mxz*Mxy)/DET/2
+
+    a = Xcenter + mean(x)  #center of the circle
+    b = Ycenter + mean(y)
+    r = sqrt(Xcenter*Xcenter + Ycenter*Ycenter + Mz + η + η)
+
+    (a, b, r)
+end
 
 import LsqFit: levenberg_marquardt, OnceDifferentiable, minimizer
 
@@ -238,6 +300,20 @@ z+B*x+C*y+D <- (x-a)²+(y-b)²-r²
 """
 function abr_to_BCD(a,b,r)
     [-2a,-2b,a^2+b^2-r^2]
+end
+
+"""
+    parameterize(a::Float64, b::Float64, r::Float64)
+    parameterize(c::Circle)
+    
+Parameterizes a circle with center `a`, `b` and radius `r` into x, y values  (mainly for plotting purposes). 
+"""
+parametric_form(c::Circle) = parametric_form(c.position..., c.radius)
+function parametric_form(a, b, r; endpt = 2*π) 
+    # parameterize the circle for plotting. 
+    cxvals = [a + r*cos(t) for t = 0:0.01:endpt]
+    cyvals = [b + r*sin(t) for t = 0:0.01:endpt]
+    return cxvals, cyvals
 end
 
 end # module

@@ -1,7 +1,7 @@
 using Test
 using StatsBase
 using CircleFit
-
+using Statistics
 
 @testset "Analytic Fits" begin
     @testset "Pratt" begin
