@@ -1,7 +1,7 @@
 name = "CircleFit"
 uuid = "a2741ea9-3318-4d4b-8b99-ae5c58b57db7"
 authors = ["Michael Pusterhofer <pusterhofer@student.tugraz.at>"]
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
