@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/feanor12/CircleFit.jl/actions/workflows/test.yml/badge.svg)](https://github.com/feanor12/CircleFit.jl/actions/workflows/test.yml)
 [![Coverage](https://codecov.io/gh/feanor12/CircleFit.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/feanor12/CircleFit.jl)
-
+[![][docs-development-img]][docs-development-url]
 
 Circle fitting using [Kåsa's method](https://doi.org/10.1109/TIM.1976.6312298)
 
