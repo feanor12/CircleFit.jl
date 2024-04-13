@@ -1,6 +1,6 @@
 # CircleFit.jl
 
-[![CI](https://github.com/feanor12/CircleFit.jl/actions/workflows/test.yml/badge.svg)](https://github.com/feanor12/CircleFit.jl/actions/workflows/test.yml)
+[![CI](https://github.com/feanor12/CircleFit.jl/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/feanor12/CircleFit.jl/actions/workflows/test.yml)
 [![Coverage](https://codecov.io/gh/feanor12/CircleFit.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/feanor12/CircleFit.jl)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://feanor12.github.io/CircleFit.jl/dev/)
 
