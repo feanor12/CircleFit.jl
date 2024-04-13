@@ -7,8 +7,7 @@ This package includes algorithms used for fitting circles.
 | kasa| yes | no |[A circle fitting procedure and its error analysis](https://doi.org/10.1109/TIM.1976.6312298) |
 | graf| yes | no |[Least Squares Fitting of Circles](https://link.springer.com/article/10.1007/s10851-005-0482-8)|
 | taubin| yes | no |[Least Squares Fitting of Circles](https://link.springer.com/article/10.1007/s10851-005-0482-8)|
-| pratt| yes | no | [Least Squares Fitting of Circles](https://link.springer.com/article/10.1007/s10851-005-0482-8)|
-| pratt\_newton| yes | no | [Circular and Linear Regression](https://doi.org/10.1201/EBK1439835906), [C++ code](https://people.cas.uab.edu/~mosya/cl/CircleFitByPratt.cpp), [Least Squares Fitting of Circles](https://link.springer.com/article/10.1007/s10851-005-0482-8)|
+| pratt,pratt\_newton| yes | no | [Circular and Linear Regression](https://doi.org/10.1201/EBK1439835906), [C++ code](https://people.cas.uab.edu/~mosya/cl/CircleFitByPratt.cpp), [Least Squares Fitting of Circles](https://link.springer.com/article/10.1007/s10851-005-0482-8)|
 
 Example:
 ```julia
@@ -43,4 +42,3 @@ Gradient weighted algebraic fit for a circle using `LsqFit.levenberg_marquardt`:
 
 Non optimized implementations:
 * Method by Taubin `CircleFit.taubin(x,y)` or `fit(Circle,x,y,alg=:taubin)`
-* Method by Pratt `CircleFit.pratt(x,y)` or `fit(Circle,x,y,alg=:pratt)`
