@@ -5,6 +5,7 @@ makedocs(sitename="CircleFit.jl",
 				"Overview" => "index.md"
 			  "API" => "api.md"
 		   "Examples" => "examples.md"
+		   "3D" => "3d.md"
 		  ])
 
 deploydocs(

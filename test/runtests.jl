@@ -3,7 +3,7 @@ using StatsBase
 using CircleFit
 using Statistics
 
-@testset "Analytic Fits" begin
+@testset "Fits" begin
     @testset "Pratt" begin
         include("pratt.jl")
     end
@@ -15,6 +15,9 @@ using Statistics
     end
     @testset "GRAF" begin
         include("graf.jl")
+    end
+    @testset "CGA" begin
+        include("cga.jl")
     end
 end
 @testset "StatsModel" begin
