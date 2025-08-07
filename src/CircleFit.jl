@@ -4,6 +4,8 @@ import StatsBase: RegressionModel, residuals, coef, coefnames, dof
 import Statistics: var, cov, stdm, mean
 import Roots: find_zero
 
+include("CGA.jl")
+
 export circfit, fit, Circle, algorithm, parametric_form
 
 """
@@ -20,9 +22,12 @@ Currently only in 2D.
 struct Circle <: RegressionModel
     position::AbstractArray
     radius
+    normal::Union{AbstractArray,Nothing}
     points::AbstractArray
     alg::Symbol
 end
+
+Circle(position,radius,points,alg) = Circle(position,radius,nothing,points,alg)
 
 """
     algorithm(model::Circle) 
@@ -62,10 +67,19 @@ function StatsBase.fit(::Type{Circle},x::AbstractArray,y::AbstractArray;alg=:kas
     elseif alg == :graf
         p0 = collect(kasa(x,y))
         GRAF(x,y,p0)
+    elseif alg == :cga
+	centrum,normal_vector, radius = circlefitCGA3D(x,y,zeros(size(x)))
+	(centrum[1],centrum[2],radius)
     else
         kasa(x,y)
     end
     Circle([x0,y0],r,[x y],alg)
+end
+
+
+function StatsBase.fit(::Type{Circle},x::AbstractArray,y::AbstractArray,z::AbstractArray;alg=:cga)
+	centrum,normal_vector, radius = circlefitCGA3D(x,y,z)
+	return Circle(centrum,radius,normal_vector,[x y z],alg)
 end
 
 # Old method interface

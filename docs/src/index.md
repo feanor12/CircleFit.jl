@@ -8,6 +8,7 @@ This package includes algorithms used for fitting circles.
 | graf| yes | no |[Least Squares Fitting of Circles](https://link.springer.com/article/10.1007/s10851-005-0482-8)|
 | taubin| yes | no |[Least Squares Fitting of Circles](https://link.springer.com/article/10.1007/s10851-005-0482-8)|
 | pratt,pratt\_newton| yes | no | [Circular and Linear Regression](https://doi.org/10.1201/EBK1439835906), [C++ code](https://people.cas.uab.edu/~mosya/cl/CircleFitByPratt.cpp), [Least Squares Fitting of Circles](https://link.springer.com/article/10.1007/s10851-005-0482-8)|
+| cga| yes | yes | Issue(https://github.com/feanor12/CircleFit.jl/issues/10) |
 
 Example:
 ```julia
@@ -37,6 +38,13 @@ coefnames(result)
 rss(result)
 # 1.5777218104420236e-30
 ```
+
+Example 3D (new):
+```
+result = fit(Circle,x,y,z)
+normal_vector = result.normal
+```
+
 
 Gradient weighted algebraic fit for a circle using `LsqFit.levenberg_marquardt`: `CircleFit.GRAF(x,y,p0)` or `fit(Circle,x,y,alg=:graf)`
 
